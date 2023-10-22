@@ -31,9 +31,11 @@
                         <form action="{{ route('patient.show', ['id' => $patient->id]) }}" method="get">
                             <button type="submit" class="btn btn-success">Editer</button>
                         </form>
-                        <button type="button" class="btn btn-danger" data-id="{{$patient->id}}"  data-toggle="modal" data-target="#modal-danger">
+                        <button type="button" onclick="performDelete(event)" class="btn btn-danger ml-2"
+                            data-id="{{$patient->id}}" data-toggle="modal" data-target="#modal-danger">
                             Supprimer
                         </button>
+
                     </div>
 
                 </td>
@@ -62,12 +64,13 @@
             <form action="" method="post" id="delete-form">
                 <input type="hidden" name="id" id="id" value="">
                 <script>
-                    document.querySelector('.btn-danger').addEventListener('click', function(event) {
-                        var id = event.target.getAttribute('data-id');
-                        document.querySelector('#id').value = id;
-                        var form = document.querySelector('#delete-form');
-                        form.action = "{{ route('delete', ['id' => 'value']) }}".replace('value',$id);
-                    });
+                function performDelete(event) {
+                    console.log('Hello');
+                    var id = event.target.getAttribute('data-id');
+                    document.querySelector('#id').value = id;
+                    var form = document.querySelector('#delete-form');
+                    form.action = "{{ route('delete', ['id' => ':value']) }}".replace(':value', id);
+                }
                 </script>
 
                 <div class="modal-body">
@@ -81,6 +84,8 @@
         </div>
     </div>
 </div>
+
+
 
 
 

@@ -26,4 +26,12 @@ class ElequantPatientRepository extends PatientRepository{
 
         return $patient;
     }
+
+    public function delete($id){
+        $patient = Patients::find($id);
+
+        if($patient){
+            $patient->destroy($id);
+        }
+    }
 }

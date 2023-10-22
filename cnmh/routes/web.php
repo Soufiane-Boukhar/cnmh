@@ -45,7 +45,7 @@ Route::post('/patient/ajouter',[PatientsController::class ,'create'])->name('cre
 Route::get('/liste/patients',[PatientsController::class ,'getAll'])->name('listPatient');
 Route::get('/patient/{id}',[PatientsController::class ,'find'])->name('patient.show');
 Route::PATCH('/patient/{id}',[PatientsController::class ,'update'])->name('edit.patient');
-Route::get('/liste/patients/{id}',[PatientsController::class ,'delete'])->name('delete');
+Route::post('/liste/patients/{id}',[PatientsController::class ,'delete'])->name('delete');
 
 
 
