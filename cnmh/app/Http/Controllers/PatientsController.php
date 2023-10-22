@@ -69,7 +69,7 @@ class PatientsController extends Controller
 
     public function delete($id){
         $patients = $this->patientRepository->delete($id);
-        return redirect('/liste/patients')->with('success', 'Patient a ete supprimer avec reussir');
+        return redirect()->route('listPatient')->with('success', 'Patient a ete supprimer avec reussir');
     }
     
 }

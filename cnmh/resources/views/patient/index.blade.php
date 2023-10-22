@@ -62,6 +62,8 @@
                 </button>
             </div>
             <form action="" method="post" id="delete-form">
+                @csrf 
+                @method('post')
                 <input type="hidden" name="id" id="id" value="">
                 <script>
                 function performDelete(event) {
