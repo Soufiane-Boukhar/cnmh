@@ -28,7 +28,7 @@ class PatientsController extends Controller
         $data = $request->all();
 
         $patient = $this->patientRepository->create($data);
-
+        
         return redirect('/patient/ajouter')->with('success','Patient a ete ajoutee reussir');
     }
 

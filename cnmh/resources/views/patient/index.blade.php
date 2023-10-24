@@ -3,8 +3,13 @@
 @section('content')
 
 <div class="container mt-4">
+    @if(session('success'))
+    <div class="mt-5 bg-success p-4">
+        <span class="font-medium text-light">{{ session('success') }}</span>
+    </div>
+    @endif
 
-    <div class="d-flex">
+    <div class="d-flex mt-4">
         <div>
             <form method="POST" action="{{ route('excel.export') }}">
                 @csrf
@@ -64,30 +69,7 @@
                 </td>
             </tr>
             @endforeach
-            @else
-            @if (!empty($importedData))
-            @foreach ($importedData as $data)
-            <tr>
-                <td>{{ htmlspecialchars($data['nom']) }}</td>
-                <td>{{ htmlspecialchars($data['prenom']) }}</td>
-                <td>{{ htmlspecialchars($data['telephone']) }}</td>
-                <td>{{ htmlspecialchars($data['gender']) }}</td>
-                <td>{{ htmlspecialchars($data['handicape']) }}</td>
-                <td>{{ htmlspecialchars($data['date']->format('Y-m-d H:i:s')) }}</td>
-                <td>
-                    <div class="d-flex">
-                        <form action="{{ route('patient.show', ['id' => $data['id']]) }}" method="get">
-                            <button type="submit" class="btn btn-success">Editer</button>
-                        </form>
-                        <button type="button" onclick="performDelete(event)" class="btn btn-danger ml-2"
-                            data-id="{{$data['id']}}" data-toggle="modal" data-target="#modal-danger">
-                            Supprimer
-                        </button>
-                    </div>
-                </td>
-            </tr>
-            @endforeach
-            @endif
+
 
             @endif
         </tbody>

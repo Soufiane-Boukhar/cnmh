@@ -53,20 +53,17 @@ class SimpleExcelController extends Controller
             ]);
 
             $status = $this->patientRepository->create($data);
-            if ($status) {
-                $importedData[] = $data;
-            }
+            $patients = $this->patientRepository->getAll();
+
         }
     
-        if ($status) {
+        if ($patients) {
             $reader->close();
-
             sleep(2); 
-
             File::delete($fichier);
 
-            return view('patient.index', compact('importedData'))
-                ->withMsg("Importation réussie!");
+            return view('patient.index', compact('patients'))
+                ->with("success","Importation réussie!");
         }
     }
 
