@@ -4,21 +4,20 @@
 
 <div class="container mt-4">
 
-    <table id="example1" class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>Nom</th>
-                <th>Prenom</th>
-                <th>Telephone</th>
-                <th>Genre</th>
-                <th>Handicape</th>
-                <th>Date d'inscription</th>
-                <th>Action</th>
+<table id="example1" class="table table-bordered table-striped">
+                  <thead>
+                  <tr>
+                    <th>Nom</th>
+                    <th>Prenom</th>
+                    <th>Telephone</th>
+                    <th>Genre</th>
+                    <th>Handicape</th>
+                    <th>Date d-inscription</th>
+                  </tr>
+                  </thead>
+                  <tbody>
 
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($patients as $patient)
+                  @foreach($patients as $patient)
             <tr>
                 <td>{{$patient->nom}}</td>
                 <td>{{$patient->prenom}}</td>
@@ -41,11 +40,40 @@
                 </td>
             </tr>
             @endforeach
+                 
+                
+                  </tbody>
+                  <tfoot>
+                  <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th>
+                       <div class="d-flex">
+                       <form method="POST" action="{{ route('excel.export') }}" >
+                            @csrf
+                            @method('post')
+                            <input type="text" name="name" placeholder="Nom de fichier" >
+                            <select name="extension" >
+                                <option value="xlsx" >.xlsx</option>
+                                <option value="csv" >.csv</option>
+                            </select>
+                            <button type="submit" >Exporter</button>
+                        </form>
+                            <form method="POST" action="{{ route('excel.import') }}" enctype="multipart/form-data" >
+                                @csrf
+                                @method('post')
+                                <input type="file" name="fichier">
 
-
-        </tbody>
-
-    </table>
+                                <button type="submit">Importer</button>
+                            </form>
+                        </div>
+                    </th>
+                  </tr>
+                  </tfoot>
+                </table>
 
 
 

@@ -47,6 +47,10 @@ Route::get('/patient/{id}',[PatientsController::class ,'find'])->name('patient.s
 Route::PATCH('/patient/{id}',[PatientsController::class ,'update'])->name('edit.patient');
 Route::post('/liste/patients/{id}',[PatientsController::class ,'delete'])->name('delete');
 
+Route::post("simple-excel/import", "SimpleExcelController@import")->name('excel.import');
+
+Route::post("simple-excel/export", "SimpleExcelController@export")->name('excel.export');
+
 
 
 
