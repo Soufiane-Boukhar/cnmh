@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PatientsController;
+use App\Http\Controllers\SimpleExcelController;
+
 
 
 
@@ -37,6 +39,9 @@ Route::get('/patient/ajouter', function () {
     return view('patient.create');
 })->name('patient.create');
 
+Route::get('/simple-excel/import', function () {
+    return view('patient.index');
+});
 
 Route::post('/inscription',[UserController::class ,'create'])->name('create.user');
 Route::post('/check',[AuthController::class ,'login'])->name('check.login');
@@ -47,9 +52,8 @@ Route::get('/patient/{id}',[PatientsController::class ,'find'])->name('patient.s
 Route::PATCH('/patient/{id}',[PatientsController::class ,'update'])->name('edit.patient');
 Route::post('/liste/patients/{id}',[PatientsController::class ,'delete'])->name('delete');
 
-Route::post("simple-excel/import", "SimpleExcelController@import")->name('excel.import');
-
-Route::post("simple-excel/export", "SimpleExcelController@export")->name('excel.export');
+Route::post("/liste/patients", [SimpleExcelController::class,'import'])->name('excel.import');
+Route::post("simple-excel/export", [SimpleExcelController::class,'export'])->name('excel.export');
 
 
 

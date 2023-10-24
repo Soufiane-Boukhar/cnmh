@@ -3,57 +3,83 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
-use App\Models\Client;
+use App\Models\Patients;
 
 use Spatie\SimpleExcel\SimpleExcelWriter;
 use Spatie\SimpleExcel\SimpleExcelReader;
+use Illuminate\Support\Facades\File;
+use App\Repository\PatientRepository;
+use Illuminate\Support\Facades\Validator; 
+
+
+
 
 class SimpleExcelController extends Controller
 {
-    public function import (Request $request) {
+    protected $patientRepository;
 
-    	$this->validate($request, [
-    		'fichier' => 'bail|required|file|mimes:xlsx'
-    	]);
-
-    	$fichier = $request->fichier->move(public_path(), $request->fichier->hashName());
-
-    	$reader = SimpleExcelReader::create($fichier);
-
-        $rows = $reader->getRows();
-
-        $status = Client::insert($rows->toArray());
-
-    	if ($status) {
-
-            $reader->close(); 
-            unlink($fichier);
-
-            return back()->withMsg("Importation réussie !");
-
-        } else { abort(500); }
+    public function __construct(PatientRepository $patientRepository){
+        $this->patientRepository = $patientRepository;
     }
+    public function import(Request $request) {
+        
 
+        $this->validate($request, [
+            'fichier' => 'bail|required|file|mimes:xlsx',
+        ]);
+    
+        $fichier = $request->fichier->move(public_path(), $request->fichier->hashName());
+    
+        $reader = SimpleExcelReader::create($fichier);
+        $rows = $reader->getRows();
+    
+        foreach ($rows as $row) {
+            $data = [
+                'nom' => $row['nom'],
+                'prenom' => $row['prenom'],
+                'telephone' => $row['telephone'],
+                'gender' => $row['gender'],
+                'handicape' => $row['handicape'],
+                'date' => $row['date'],
+            ];
+        
+            $validator = Validator::make($data, [
+                'nom' => 'required',
+                'prenom' => 'required',
+                'telephone' => 'required',
+                'gender' => 'required',
+                'handicape' => 'required',
+                'date' => 'required',
+            ]);
+
+            $status = $this->patientRepository->create($data);
+            if ($status) {
+                $importedData[] = $data;
+            }
+        }
+    
+        if ($status) {
+            $reader->close();
+
+            sleep(2); 
+
+            File::delete($fichier);
+
+            return view('patient.index', compact('importedData'))
+                ->withMsg("Importation réussie!");
+        }
+    }
 
     public function export (Request $request) {
 
-    	$this->validate($request, [ 
-    		'name' => 'bail|required|string',
-    		'extension' => 'bail|required|string|in:xlsx,csv'
-    	]);
+    	$file_name = 'Patients.xlsx';
 
-    	$file_name = $request->name.".".$request->extension;
+    	$Patients = Patients::select("nom", "prenom", "telephone", "gender" , "handicape" , "date")->get();
 
-    	// 3. On récupère données de la table "clients"
-    	$clients = Client::select("name", "email", "phone", "address")->get();
-
-    	// 4. $writer : Objet Spatie\SimpleExcel\SimpleExcelWriter
     	$writer = SimpleExcelWriter::streamDownload($file_name);
 
- 		// 5. On insère toutes les lignes au fichier Excel $file_name
-    	$writer->addRows($clients->toArray());
+    	$writer->addRows($Patients->toArray());
 
-        // 6. Lancer le téléchargement du fichier
         $writer->toBrowser();
 
     }

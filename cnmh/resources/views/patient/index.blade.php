@@ -4,20 +4,46 @@
 
 <div class="container mt-4">
 
-<table id="example1" class="table table-bordered table-striped">
-                  <thead>
-                  <tr>
-                    <th>Nom</th>
-                    <th>Prenom</th>
-                    <th>Telephone</th>
-                    <th>Genre</th>
-                    <th>Handicape</th>
-                    <th>Date d-inscription</th>
-                  </tr>
-                  </thead>
-                  <tbody>
+    <div class="d-flex">
+        <div>
+            <form method="POST" action="{{ route('excel.export') }}">
+                @csrf
+                @method('post')
+                <button type="submit" class="btn btn-success">Exporter</button>
+            </form>
+        </div>
+        <div>
+            <form method="POST" class="ml-4 d-flex" action="{{ route('excel.import') }}" enctype="multipart/form-data">
+                @csrf
+                @method('post')
+                <input type="file" class="form-control" name="fichier">
+                <button type="submit" class="btn btn-primary">Importer</button>
+            </form>
+        </div>
 
-                  @foreach($patients as $patient)
+    </div>
+
+</div>
+
+<div class="container mt-4">
+
+
+    <table id="example1" class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Prenom</th>
+                <th>Telephone</th>
+                <th>Genre</th>
+                <th>Handicape</th>
+                <th>Date d-inscription</th>
+                <th>Action</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @if(!empty($patients))
+            @foreach($patients as $patient)
             <tr>
                 <td>{{$patient->nom}}</td>
                 <td>{{$patient->prenom}}</td>
@@ -34,51 +60,40 @@
                             data-id="{{$patient->id}}" data-toggle="modal" data-target="#modal-danger">
                             Supprimer
                         </button>
-
                     </div>
-
                 </td>
             </tr>
             @endforeach
-                 
-                
-                  </tbody>
-                  <tfoot>
-                  <tr>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th>
-                       <div class="d-flex">
-                       <form method="POST" action="{{ route('excel.export') }}" >
-                            @csrf
-                            @method('post')
-                            <input type="text" name="name" placeholder="Nom de fichier" >
-                            <select name="extension" >
-                                <option value="xlsx" >.xlsx</option>
-                                <option value="csv" >.csv</option>
-                            </select>
-                            <button type="submit" >Exporter</button>
+            @else
+            @if (!empty($importedData))
+            @foreach ($importedData as $data)
+            <tr>
+                <td>{{ htmlspecialchars($data['nom']) }}</td>
+                <td>{{ htmlspecialchars($data['prenom']) }}</td>
+                <td>{{ htmlspecialchars($data['telephone']) }}</td>
+                <td>{{ htmlspecialchars($data['gender']) }}</td>
+                <td>{{ htmlspecialchars($data['handicape']) }}</td>
+                <td>{{ htmlspecialchars($data['date']->format('Y-m-d H:i:s')) }}</td>
+                <td>
+                    <div class="d-flex">
+                        <form action="{{ route('patient.show', ['id' => $data['id']]) }}" method="get">
+                            <button type="submit" class="btn btn-success">Editer</button>
                         </form>
-                            <form method="POST" action="{{ route('excel.import') }}" enctype="multipart/form-data" >
-                                @csrf
-                                @method('post')
-                                <input type="file" name="fichier">
+                        <button type="button" onclick="performDelete(event)" class="btn btn-danger ml-2"
+                            data-id="{{$data['id']}}" data-toggle="modal" data-target="#modal-danger">
+                            Supprimer
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            @endforeach
+            @endif
 
-                                <button type="submit">Importer</button>
-                            </form>
-                        </div>
-                    </th>
-                  </tr>
-                  </tfoot>
-                </table>
-
-
+            @endif
+        </tbody>
+    </table>
 
 </div>
-
 
 <div class="modal fade" id="modal-danger">
     <div class="modal-dialog">
@@ -90,7 +105,7 @@
                 </button>
             </div>
             <form action="" method="post" id="delete-form">
-                @csrf 
+                @csrf
                 @method('post')
                 <input type="hidden" name="id" id="id" value="">
                 <script>
@@ -102,7 +117,6 @@
                     form.action = "{{ route('delete', ['id' => ':value']) }}".replace(':value', id);
                 }
                 </script>
-
                 <div class="modal-body">
                     <p>Voulez-vous vraiment supprimer ce patient ?</p>
                 </div>
@@ -114,9 +128,5 @@
         </div>
     </div>
 </div>
-
-
-
-
 
 @endsection
